@@ -9,7 +9,7 @@ static char *font = "JetBrainsMono Nerd Font:pixelsize=14:antialias=true:autohin
 
 /* Spare fonts */
 static char *font2[] = {
-	"JoyPixels:pixelsize=10:antialias=true:autohint=true"
+	"JoyPixels:pixelsize=14:antialias=true:autohint=true"
 };
 static int borderpx = 2;
 
