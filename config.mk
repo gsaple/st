@@ -36,3 +36,5 @@ STLDFLAGS = $(LIBS) $(LDFLAGS)
 
 # compiler and linker
 # CC = c99
+# similar issue for opensuse: https://github.com/Tarsnap/spiped/issues/235
+CC=cc
