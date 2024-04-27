@@ -724,7 +724,7 @@ getsel(void)
 void
 selclear(void)
 {
-	if (sel.ob.x == -1)
+	if (sel.ob.x == -1 || sel.alt != IS_SET(MODE_ALTSCREEN))
 		return;
 	selremove();
 	tsetdirt(sel.nb.y, sel.ne.y);
@@ -1890,7 +1890,7 @@ csihandle(void)
 			ttywrite(vtiden, strlen(vtiden), 0);
 		break;
 	case 'b': /* REP -- if last char is printable print it <n> more times */
-		DEFAULT(csiescseq.arg[0], 1);
+		LIMIT(csiescseq.arg[0], 1, 65535);
 		if (term.lastc)
 			while (csiescseq.arg[0]-- > 0)
 				tputc(term.lastc);
@@ -1984,6 +1984,7 @@ csihandle(void)
 		}
 		break;
 	case 'S': /* SU -- Scroll <n> line up */
+		if (csiescseq.priv) break;
 		DEFAULT(csiescseq.arg[0], 1);
 		/* xterm, urxvt, alacritty save this in history */
 		tscrollup(term.top, term.bot, csiescseq.arg[0], SCROLL_SAVEHIST);
@@ -2636,6 +2637,7 @@ eschandle(uchar ascii)
 		treset();
 		resettitle();
 		xloadcols();
+		xsetmode(0, MODE_HIDE);
 		break;
 	case '=': /* DECPAM -- Application keypad */
 		xsetmode(1, MODE_APPKEYPAD);
@@ -2784,7 +2786,10 @@ check_control_code:
 	}
 
 	if (term.c.x+width > term.col) {
-		tnewline(1);
+		if (IS_SET(MODE_WRAP))
+			tnewline(1);
+		else
+			tmoveto(term.col - width, term.c.y);
 		gp = &term.line[term.c.y][term.c.x];
 	}
 
